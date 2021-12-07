@@ -1,0 +1,18 @@
+package com.example.webclient.security;
+
+public enum UserPermission {
+    CLIENT_READ("CLIENT_READ"),
+    CLIENT_WRITE("CLIENT_WRITE"),
+    ORDER_READ("ORDER_READ"),
+    ORDER_WRITE("ORDER_WRITE");
+
+    private final String permission;
+
+    UserPermission(String permission) {
+        this.permission = permission;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+}
