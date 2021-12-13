@@ -4,11 +4,12 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Table(name = "article",
         schema = "public")
@@ -27,6 +28,8 @@ public class Article {
     private Long id;
     private String libelle;
     private Double price;
+    @ManyToMany(mappedBy = "articleOrder")
+    private Collection<Order> orderArticle = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

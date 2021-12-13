@@ -7,6 +7,8 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 @Getter
@@ -33,6 +35,13 @@ public class Order {
                 referencedColumnName = "id",
                 nullable = false)
     private Client orderClient;
+    @ManyToMany
+    @JoinTable(
+            name="order_article",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "article_id")
+    )
+    private Collection<Article> articleOrder = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

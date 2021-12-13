@@ -43,6 +43,7 @@ public class ClientController {
         return ResponseEntity.ok(clientMapper.toClientDto(clientService.modifyClient(id, nom, dob)));
     }
 
+    @PreAuthorize("hasAuthority('CLIENT_WRITE')")
     @DeleteMapping(path = "{id}")
     public void deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);

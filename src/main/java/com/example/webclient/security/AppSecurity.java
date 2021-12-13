@@ -1,11 +1,14 @@
 package com.example.webclient.security;
 
+import com.example.webclient.jwt.JwtUsernameAndPasswordAuthenticationFilter;
+import com.example.webclient.jwt.JwtValidateFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,12 +27,14 @@ public class AppSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/api/**").hasAnyRole(ADMIN.name(), USER_CLIENT.name(), USER_ORDER.name())
-                .anyRequest()
-                .authenticated()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .httpBasic();
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager()))
+                .addFilterAfter(new JwtValidateFilter(), JwtUsernameAndPasswordAuthenticationFilter.class)
+                .authorizeRequests()
+                .antMatchers("/api/**").hasAnyRole(ADMIN.name(), USER_CLIENT.name(), USER_ORDER.name(), USER_ARTICLE.name())
+                .anyRequest()
+                .authenticated();
     }
 
     @Override
@@ -50,11 +55,17 @@ public class AppSecurity extends WebSecurityConfigurerAdapter {
                 .password(passwordEncoder().encode("order1234"))
                 .authorities(USER_ORDER.getAuthorities())
                 .build();
+        UserDetails userArticle = User.builder()
+                .username("article")
+                .password(passwordEncoder().encode("article1234"))
+                .authorities(USER_ARTICLE.getAuthorities())
+                .build();
 
         return new InMemoryUserDetailsManager(
                 user,
                 userClient,
-                userOrder);
+                userOrder,
+                userArticle);
     }
 
     @Bean

@@ -9,9 +9,10 @@ import java.util.stream.Collectors;
 import static com.example.webclient.security.UserPermission.*;
 
 public enum UserRole {
-    ADMIN(Sets.newHashSet(CLIENT_READ, CLIENT_WRITE, ORDER_READ, ORDER_WRITE)),
+    ADMIN(Sets.newHashSet(CLIENT_READ, CLIENT_WRITE, ORDER_READ, ORDER_WRITE, ARTICLE_READ, ARTICLE_WRITE)),
     USER_CLIENT(Sets.newHashSet(CLIENT_READ)),
-    USER_ORDER(Sets.newHashSet(ORDER_READ, ORDER_WRITE));
+    USER_ORDER(Sets.newHashSet(ORDER_READ, ORDER_WRITE)),
+    USER_ARTICLE(Sets.newHashSet(ARTICLE_READ, ARTICLE_WRITE));
 
     private final Set<UserPermission> permissions;
 

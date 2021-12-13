@@ -1,49 +1,56 @@
 package com.example.webclient.services;
 
 import com.example.webclient.models.Article;
-import org.springframework.context.annotation.Bean;
+import com.example.webclient.repositories.ArticleRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
-
-import static com.example.webclient.utils.Constants.*;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
+
+    private final ArticleRepository articleRepository;
 
     @Override
     public Article createArticle(Article article) {
-        return null;
+        return articleRepository.save(article);
     }
 
     @Override
     public Article modifyArticle(Long id, String libelle, Double price) {
-        return null;
+        Optional<Article> articleOptional = articleRepository.findById(id);
+
+        if (articleOptional.isPresent()) {
+            if (libelle != null && libelle.length() > 0) {
+                articleOptional.get().setLibelle(libelle);
+            }
+            if (price != null) {
+                articleOptional.get().setPrice(price);
+            }
+            return articleOptional.get();
+        }else {
+            throw new IllegalStateException("L'Article n'existe pas");
+        }
     }
 
     @Override
     public List<Article> getAllArticle() {
-        return this.getWebClient().get()
-                .uri("/article")
-                .retrieve()
-                .bodyToFlux(Article.class)
-                .collectList()
-                .block();
+        return articleRepository.findAll();
     }
 
     @Override
-    public Article getArticleById(Long id) {
-        return null;
+    public Optional<Article> getArticleById(Long id) {
+        return articleRepository.findById(id);
     }
 
     @Override
     public void deleteArticle(Long id) {
-
-    }
-
-    @Bean
-    public WebClient getWebClient() {
-        return WebClient.create(BASE_URL);
+        if (!articleRepository.existsById(id)) {
+            throw new IllegalStateException("L'Article n'existe pas");
+        }
+        articleRepository.deleteById(id);
     }
 }
